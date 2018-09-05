@@ -4,6 +4,8 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using Common.DTOs;
 
 namespace Data.Repository
 {
@@ -34,6 +36,11 @@ namespace Data.Repository
 
         public IEnumerable<T> GetAll()
         {
+            var list =  dbSet.ToList();
+
+            var listOut = MapToDtoList<,> (list);
+
+
             return dbSet.ToList();
         }
 
@@ -68,6 +75,14 @@ namespace Data.Repository
 
                 throw;
             }
+        }
+
+        public virtual IEnumerable<TDto> MapToDtoList<TEntity, TDto>(IEnumerable<TEntity> entity)
+            where TEntity : class
+            where TDto : class
+        {
+            Mapper.Initialize(cfg => cfg.CreateMap<TEntity, TDto>());
+            return Mapper.Map<IEnumerable<TEntity>, IEnumerable<TDto>>(entity);
         }
     }
 }
